@@ -23,7 +23,8 @@ public class OrderController {
     OrderService orderServiceObject;
     @PostMapping("/add-order")
     public ResponseEntity<String> addOrder(@RequestBody Order order){
-        orderServiceObject.addOrder(order);
+        OrderService os = new OrderService();
+        os.addOrder(order);
         return new ResponseEntity<>("New order added successfully", HttpStatus.CREATED);
     }
 
