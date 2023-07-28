@@ -7,8 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class OrderService {
@@ -34,12 +33,14 @@ public class OrderService {
     }
     public int getOrderCountByPartnerId(String partnerId)
     {
-        return orderRepositoryObject.getOrderCountByPartnerId(partnerId).getNumberOfOrders();
+        return orderRepositoryObject.getPartnerById(partnerId) == null ? 0 : orderRepositoryObject.getPartnerById(partnerId).getNumberOfOrders();
     }
     public List<String> getOrdersByPartnerId(String partnerId)
     {
         List<String> orders = new ArrayList<>();
-        for(Order order : orderRepositoryObject.getOrdersByPartnerId(partnerId))
+        List<Order> ordersOfPartner = orderRepositoryObject.getOrdersByPartnerId(partnerId);
+        if(ordersOfPartner == null){ return orders; }
+        for(Order order : ordersOfPartner)
         {
             orders.add(order.getId());
         }
@@ -48,7 +49,9 @@ public class OrderService {
     public List<String> getAllOrders()
     {
         List<String> orders = new ArrayList<>();
-        for(String orderId : orderRepositoryObject.getAllOrders().keySet())
+        HashMap<String, Order> map = orderRepositoryObject.getAllOrders();
+        if(map.size() == 0){ return orders; }
+        for(String orderId : map.keySet())
         {
             orders.add(orderId);
         }
@@ -61,12 +64,13 @@ public class OrderService {
     }
     public int getOrdersLeftAfterGivenTimeByPartnerId(String time, String partnerId)
     {
-        List<Order> ordersOfPartner = orderRepositoryObject.getOrdersLeftAfterGivenTimeByPartnerId(partnerId);
         int count = 0;
-        int timeInMinutes = Integer.parseInt(time.substring(0,2)) * 60 + Integer.parseInt(time.substring(3));
+        List<Order> ordersOfPartner = orderRepositoryObject.getOrdersByPartnerId(partnerId);
+        if(ordersOfPartner == null) { return count; }
+        int timeInMinutes = (Integer.parseInt(time.substring(0,2)) * 60) + Integer.parseInt(time.substring(3));
         for(Order order : ordersOfPartner)
         {
-            if(timeInMinutes > order.getDeliveryTime())
+            if(timeInMinutes < order.getDeliveryTime())
             {
                 count++;
             }
@@ -76,8 +80,19 @@ public class OrderService {
     public String getLastDeliveryTimeByPartnerId(String partnerId)
     {
         Order order = orderRepositoryObject.getLastDeliveryTimeByPartnerId(partnerId);
+        if(order == null) { return null; }
         int time = order.getDeliveryTime();
-        String timeInFormat = (time/60) + ":" + (time%60);
+        String HH = (time/60) + "";
+        String MM = (time%60) + "";
+        if(HH.length() == 1)
+        {
+            HH = 0 + HH;
+        }
+        if(MM.length() == 1)
+        {
+            MM = 0 + MM;
+        }
+        String timeInFormat = HH + ":" + MM;
         return timeInFormat;
     }
     public void deletePartnerById(String partnerId)
