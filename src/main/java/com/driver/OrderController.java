@@ -19,12 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("orders")
 public class OrderController {
 
-    @Autowired
-    OrderService orderServiceObject;
+    //@Autowired
+    OrderService orderServiceObject = new OrderService();
     @PostMapping("/add-order")
     public ResponseEntity<String> addOrder(@RequestBody Order order){
-        OrderService os = new OrderService();
-        os.addOrder(order);
+        orderServiceObject.addOrder(order);
         return new ResponseEntity<>("New order added successfully", HttpStatus.CREATED);
     }
 
