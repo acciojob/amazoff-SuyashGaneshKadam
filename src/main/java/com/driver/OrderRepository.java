@@ -73,7 +73,8 @@ public class OrderRepository {
         partnerOrderMappingDb.remove(partnerId);
         for(String orderId : orderPartnerMappingDb.keySet())
         {
-            if(orderPartnerMappingDb.get(orderId).getId().equals(partnerId))
+            DeliveryPartner partner = orderPartnerMappingDb.get(orderId);
+            if(partner.getId().equals(partnerId))
             {
                 orderPartnerMappingDb.remove(orderId);
             }
