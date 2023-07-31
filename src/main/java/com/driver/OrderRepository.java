@@ -2,6 +2,7 @@ package com.driver;
 
 import org.springframework.stereotype.Repository;
 import java.util.*;
+import java.lang.*;
 
 @Repository
 public class OrderRepository {
@@ -71,8 +72,18 @@ public class OrderRepository {
             return;
         }
         partnerOrderMappingDb.remove(partnerId);
-        for(String orderId : orderPartnerMappingDb.keySet())
+//        for(String orderId : orderPartnerMappingDb.keySet())
+//        {
+//            DeliveryPartner partner = orderPartnerMappingDb.get(orderId);
+//            if(partner.getId().equals(partnerId))
+//            {
+//                orderPartnerMappingDb.remove(orderId);
+//            }
+//        }
+        Iterator<String> list = orderPartnerMappingDb.keySet().iterator();
+        while(list.hasNext())
         {
+            String orderId = list.next();
             DeliveryPartner partner = orderPartnerMappingDb.get(orderId);
             if(partner.getId().equals(partnerId))
             {
